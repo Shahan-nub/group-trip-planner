@@ -55,7 +55,8 @@ export default function AIItineraryForm({
       );
 
       setResult(data);
-    } catch (err) {
+    } catch (err : any) {
+      toast.error(err.message);
       console.log(err);
     }
 

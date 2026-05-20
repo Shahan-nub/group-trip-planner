@@ -1,6 +1,9 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { auth } from "@clerk/nextjs/server";
+
+import { checkRateLimit } from "@/src/lib/rate-limit";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -13,6 +16,24 @@ export async function generateItinerary(
 
   tripType: string,
 ) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const allowed = await checkRateLimit(
+    userId,
+
+    5, // max requests
+
+    60, // per minute
+  );
+
+  if (!allowed.success) {
+    throw new Error("Rate limit exceeded. Try later.");
+  }
+
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
   });

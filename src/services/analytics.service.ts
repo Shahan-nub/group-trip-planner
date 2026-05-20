@@ -1,15 +1,40 @@
-import { prisma } from "@/src/lib/prisma";
+import { prisma }
+from "@/src/lib/prisma";
 
-export async function expenseByCategory(tripId: string) {
-  return prisma.expense.groupBy({
-    by: ["category"],
+export async function
+expenseByCategory(
+tripId:string
+){
 
-    where: {
-      tripId,
-    },
+const data=
+await prisma.expense
+.groupBy({
 
-    _sum: {
-      amount: true,
-    },
-  });
+by:[
+"category"
+],
+
+where:{
+tripId
+},
+
+_sum:{
+amount:true
+}
+
+});
+
+return data.map(
+item=>({
+
+name:
+item.category,
+
+value:
+item._sum.amount
+??0
+
+})
+);
+
 }

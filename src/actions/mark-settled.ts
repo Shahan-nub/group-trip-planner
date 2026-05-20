@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { currentUserDb } from "@/src/lib/current-user";
 
 import { revalidatePath } from "next/cache";
+import { redis } from "../lib/redis";
 
 type Input = {
   tripId: string;
@@ -16,35 +17,26 @@ type Input = {
   amount: number;
 };
 
-export async function markSettled(
-  values: Input
-) {
-  const user =
-    await currentUserDb();
+export async function markSettled(values: Input) {
+  const user = await currentUserDb();
 
-  if (!user)
-    throw new Error(
-      "Unauthorized"
-    );
+  if (!user) throw new Error("Unauthorized");
 
   await prisma.settlement.create({
     data: {
       tripId: values.tripId,
 
-      senderId:
-        values.senderId,
+      senderId: values.senderId,
 
-      receiverId:
-        values.receiverId,
+      receiverId: values.receiverId,
 
-      amount:
-        values.amount,
+      amount: values.amount,
 
       isSettled: true,
     },
   });
 
-  revalidatePath(
-    `/trip/${values.tripId}`
-  );
+  revalidatePath(`/trip/${values.tripId}`);
+
+  await redis.del(`trip:${values.tripId}`);
 }

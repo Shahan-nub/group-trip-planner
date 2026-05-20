@@ -2,6 +2,7 @@
 
 import { markSettled }
 from "@/src/actions/mark-settled";
+import toast from "react-hot-toast";
 
 type Props = {
   tripId: string;
@@ -31,7 +32,7 @@ SettleButton(
       amount
    });
 
-   alert(
+   toast.success(
     "Settlement recorded"
    );
  }

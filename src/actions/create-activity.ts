@@ -1,93 +1,50 @@
 "use server";
 
-import { prisma }
-from "@/src/lib/prisma";
+import { prisma } from "@/src/lib/prisma";
 
 import {
-CreateActivitySchema,
-CreateActivityInput
-}
-from
-"@/src/lib/validations/activity";
+  CreateActivitySchema,
+  CreateActivityInput,
+} from "@/src/lib/validations/activity";
 
-import {
-currentUserDb
-}
-from
-"@/src/lib/current-user";
+import { currentUserDb } from "@/src/lib/current-user";
 
-import {
-revalidatePath
-}
-from
-"next/cache";
+import { revalidatePath } from "next/cache";
+import { redis } from "../lib/redis";
 
-export async function
-createActivity(values : CreateActivityInput){
+export async function createActivity(values: CreateActivityInput) {
+  const user = await currentUserDb();
 
- const user=
- await currentUserDb();
+  if (!user) throw new Error("Unauthorized");
 
- if(!user)
- throw new Error(
- "Unauthorized"
- );
+  const validated = CreateActivitySchema.safeParse(values);
 
- const validated=
- CreateActivitySchema
- .safeParse(
- values
- );
+  if (!validated.success) {
+    throw new Error("Invalid fields");
+  }
 
- if(
- !validated.success
- ){
-   throw new Error(
-   "Invalid fields"
-   );
- }
+  const { tripId, title, description, location, startTime, endTime } =
+    validated.data;
 
- const {
- tripId,
- title,
- description,
- location,
- startTime,
- endTime
- }=
- validated.data;
+  await prisma.activity.create({
+    data: {
+      tripId,
 
- await prisma
- .activity
- .create({
+      title,
 
- data:{
-    tripId,
+      description,
 
-    title,
+      location,
 
-    description,
+      startTime: new Date(startTime),
 
-    location,
+      endTime: new Date(endTime),
 
-    startTime:
-    new Date(
-      startTime
-    ),
+      createdById: user.id,
+    },
+  });
 
-    endTime:
-    new Date(
-      endTime
-    ),
+  revalidatePath(`/trip/${tripId}`);
 
-    createdById:
-    user.id
- }
-
- });
-
- revalidatePath(
- `/trip/${tripId}`
- );
-
+  await redis.del(`trip:${tripId}`);
 }

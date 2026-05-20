@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import { generateItinerary } from "@/src/actions/generate-itinerary";
 import { saveAIItinerary } from "../actions/save-ai-itinerary";
@@ -30,12 +31,12 @@ export default function AIItineraryForm({
 
   async function handleGenerate() {
     if (days > 10) {
-      alert("Max 10 days");
+      toast.error("Max 10 days");
       return;
     }
 
     if (budget > 100000) {
-      alert("Budget too large");
+      toast.error("Budget too large");
 
       return;
     }
@@ -164,8 +165,4 @@ export default function AIItineraryForm({
       )}
     </div>
   );
-    //     </p>
-    //   )}
-    // </div>
-  // );
 }

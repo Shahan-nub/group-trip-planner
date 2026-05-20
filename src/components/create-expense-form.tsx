@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { createExpense } from "@/src/actions/create-expense";
+import toast from "react-hot-toast";
 
 type Props = {
   tripId: string;
@@ -28,7 +29,7 @@ export default function CreateExpenseForm({ tripId, members }: Props) {
         category: formData.get("category") as any,
       });
 
-      alert("Expense added!");
+      toast.success("Expense added!");
     } catch (error: any) {
       alert(error.message);
     }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { createActivity } from "@/src/actions/create-activity";
+import toast from "react-hot-toast";
 
 type Props = {
   tripId: string;
@@ -29,7 +30,7 @@ export default function CreateActivityForm({ tripId }: Props) {
         endTime: formData.get("endTime") as string,
       });
 
-      alert("Activity added");
+      toast.success("Activity added");
     } catch (err: any) {
       alert(err.message);
     }

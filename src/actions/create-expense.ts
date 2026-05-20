@@ -10,6 +10,7 @@ import {
 } from "@/src/lib/validations/expense";
 
 import { revalidatePath } from "next/cache";
+import { redis } from "../lib/redis";
 
 export async function createExpense(values: CreateExpenseInput) {
   const user = await currentUserDb();
@@ -96,4 +97,6 @@ export async function createExpense(values: CreateExpenseInput) {
   });
 
   revalidatePath(`/trip/${tripId}`);
+
+  await redis.del(`trip:${tripId}`);
 }

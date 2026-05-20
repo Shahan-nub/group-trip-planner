@@ -2,125 +2,67 @@
 
 import { prisma } from "@/src/lib/prisma";
 
-import { revalidatePath }
-from "next/cache";
+import { revalidatePath } from "next/cache";
+import { redis } from "../lib/redis";
 
 type AIActivity = {
+  day: number;
 
- day:number;
+  title: string;
 
- title:string;
+  location: string;
 
- location:string;
-
- description:string;
-
+  description: string;
 };
 
-export async function
-saveAIItinerary(
+export async function saveAIItinerary(
+  tripId: string,
 
-tripId:string,
+  activities: AIActivity[],
+) {
+  const trip = await prisma.trip.findUnique({
+    where: {
+      id: tripId,
+    },
+  });
 
-activities:
-AIActivity[]
+  if (!trip) throw new Error("Trip not found");
 
-){
+  const startDate = new Date(trip.startDate);
 
- const trip=
- await prisma.trip
- .findUnique({
+  const activityData = activities.map((item) => {
+    const dayOffset = item.day - 1;
 
- where:{
-   id:tripId
- }
+    const activityDate = new Date(startDate);
 
- });
+    activityDate.setDate(activityDate.getDate() + dayOffset);
 
- if(!trip)
- throw new Error(
- "Trip not found"
- );
+    const endDate = new Date(activityDate);
 
- const startDate=
- new Date(
- trip.startDate
- );
+    endDate.setHours(activityDate.getHours() + 2);
 
- const activityData=
- activities.map(
- item=>{
+    return {
+      tripId,
 
- const dayOffset=
- item.day-1;
+      title: item.title,
 
- const activityDate=
- new Date(
- startDate
- );
+      location: item.location,
 
- activityDate
- .setDate(
+      description: item.description,
 
- activityDate
- .getDate()
+      startTime: activityDate,
 
- +dayOffset
+      endTime: endDate,
 
- );
+      createdById: trip.creatorId,
+    };
+  });
 
- const endDate=
- new Date(
- activityDate
- );
+  await prisma.activity.createMany({
+    data: activityData,
+  });
 
- endDate
- .setHours(
+  revalidatePath(`/trip/${tripId}`);
 
- activityDate
- .getHours()
-
- +2
-
- );
-
- return{
-
- tripId,
-
- title:
- item.title,
-
- location:
- item.location,
-
- description:
- item.description,
-
- startTime:
- activityDate,
-
- endTime:
- endDate,
-
- createdById:
- trip.creatorId
-
- };
-
- });
-
- await prisma
- .activity
- .createMany({
-
- data:
- activityData
-
- });
-
- revalidatePath(
- `/trip/${tripId}`
- );
-
+  await redis.del(`trip:${tripId}`);
 }

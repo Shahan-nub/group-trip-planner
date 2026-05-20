@@ -39,15 +39,13 @@ export default function CreateExpenseForm({ tripId, members }: Props) {
   return (
     <form
       action={handleSubmit}
-      className="flex flex-col gap-3 border rounded-xl p-5"
+      className="flex flex-col gap-4 max-w-md"
     >
-      <h2 className="text-xl font-bold">Add Expense</h2>
-
       <input
         required
         name="title"
         placeholder="Expense title"
-        className="border p-2 rounded"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       />
 
       <input
@@ -56,26 +54,21 @@ export default function CreateExpenseForm({ tripId, members }: Props) {
         step="0.01"
         name="amount"
         placeholder="Amount"
-        className="border p-2 rounded"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       />
 
-      <select name="category" className="border p-2 rounded">
-        <option value="FOOD">Food</option>
-
-        <option value="HOTEL">Hotel</option>
-
-        <option value="TRANSPORT">Transport</option>
-
-        <option value="SHOPPING">Shopping</option>
-
-        <option value="FUEL">Fuel</option>
-
-        <option value="ACTIVITIES">Activities</option>
-
-        <option value="OTHER">Other</option>
+      <select name="category" className="glass-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        <option value="FOOD">🍔 Food</option>
+        <option value="HOTEL">🏨 Hotel</option>
+        <option value="TRANSPORT">🚗 Transport</option>
+        <option value="SHOPPING">🛍️ Shopping</option>
+        <option value="FUEL">⛽ Fuel</option>
+        <option value="ACTIVITIES">🎢 Activities</option>
+        <option value="OTHER">📌 Other</option>
       </select>
 
-      <select name="paidById" className="border p-2 rounded">
+      <select name="paidById" className="glass-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        <option value="">Select who paid</option>
         {members.map((member) => (
           <option key={member.user.id} value={member.user.id}>
             {member.user.name}
@@ -86,7 +79,7 @@ export default function CreateExpenseForm({ tripId, members }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-black text-white p-2 rounded"
+        className="glass-sm rounded-xl px-4 py-3 font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 transition duration-200 transform hover:scale-105"
       >
         {loading ? "Adding..." : "Add Expense"}
       </button>

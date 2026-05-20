@@ -26,21 +26,32 @@ export default async function DashboardPage() {
   const trips = await getUserTrips(user.id);
 
   return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-6">Welcome {user.name}</h1>
+    <div className="min-h-screen p-8 md:p-12">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-5xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome {user.name}</h1>
 
-      <div className="mb-10">
-        <CreateTripForm />
-      </div>
+        <div className="mb-12">
+          <div className="glass rounded-3xl p-8">
+            <h2 className="text-xl font-semibold mb-6">Create a New Trip</h2>
+            <CreateTripForm />
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} />
-        ))}
-      </div>
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-6">Your Trips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trips.map((trip) => (
+              <TripCard key={trip.id} trip={trip} />
+            ))}
+          </div>
+        </div>
 
-      <div className="mb-10">
-        <JoinTripForm />
+        <div className="mb-10">
+          <div className="glass rounded-3xl p-8 max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Join an Existing Trip</h2>
+            <JoinTripForm />
+          </div>
+        </div>
       </div>
     </div>
   );

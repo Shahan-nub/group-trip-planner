@@ -40,21 +40,54 @@ export default function CreateActivityForm({ tripId }: Props) {
   return (
     <form
       action={handleSubmit}
-      className="border rounded-xl p-5 flex flex-col gap-3"
+      className="flex flex-col gap-4 max-w-md"
     >
-      <h2 className="text-xl font-bold">Add Activity</h2>
+      <input 
+        required 
+        name="title" 
+        placeholder="Activity title"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
 
-      <input required name="title" placeholder="Activity" />
+      <input 
+        name="location" 
+        placeholder="Location"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
 
-      <input name="location" placeholder="Location" />
+      <textarea 
+        name="description" 
+        placeholder="Description"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
+      />
 
-      <textarea name="description" placeholder="Description" />
+      <div>
+        <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">Start Time</label>
+        <input 
+          type="datetime-local" 
+          name="startTime" 
+          required
+          className="glass-sm rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        />
+      </div>
 
-      <input type="datetime-local" name="startTime" required />
+      <div>
+        <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">End Time</label>
+        <input 
+          type="datetime-local" 
+          name="endTime" 
+          required
+          className="glass-sm rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        />
+      </div>
 
-      <input type="datetime-local" name="endTime" required />
-
-      <button>{loading ? "Adding..." : "Add"}</button>
+      <button 
+        type="submit"
+        disabled={loading}
+        className="glass-sm rounded-xl px-4 py-3 font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 transition duration-200 transform hover:scale-105"
+      >
+        {loading ? "Adding..." : "Add Activity"}
+      </button>
     </form>
   );
 }

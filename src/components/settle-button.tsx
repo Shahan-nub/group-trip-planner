@@ -38,14 +38,8 @@ SettleButton(
 
  return(
    <button
-   onClick={handleClick}
-
-   className="
-   bg-green-600
-   text-white
-   px-4
-   py-2
-   rounded"
+     onClick={handleClick}
+     className="glass-sm rounded-xl px-4 py-2 font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105\"
    >
       Mark Paid
    </button>

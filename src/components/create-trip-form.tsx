@@ -30,12 +30,16 @@ export default function CreateTripForm() {
 
   return (
     <form action={handleSubmit} className="flex flex-col gap-4 max-w-md">
-      <input name="title" placeholder="Trip title" className="border p-2" />
+      <input 
+        name="title" 
+        placeholder="Trip title" 
+        className="glass-sm rounded-xl p-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+      />
 
       <input
         name="destination"
         placeholder="Destination"
-        className="border p-2"
+        className="glass-sm rounded-xl p-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       />
 
       <input
@@ -43,23 +47,31 @@ export default function CreateTripForm() {
         type="number"
         name="budget"
         placeholder="Trip Budget"
-        className="border p-2"
+        className="glass-sm rounded-xl p-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       />
 
       <textarea
         name="description"
         placeholder="Description"
-        className="border p-2"
+        className="glass-sm rounded-xl p-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
       />
 
-      <input type="date" name="startDate" className="border p-2" />
+      <input 
+        type="date" 
+        name="startDate" 
+        className="glass-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+      />
 
-      <input type="date" name="endDate" className="border p-2" />
+      <input 
+        type="date" 
+        name="endDate" 
+        className="glass-sm rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+      />
 
       <button
         type="submit"
         disabled={loading}
-        className="bg-black text-white p-2"
+        className="glass-sm rounded-xl p-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 transition duration-200 transform hover:scale-105"
       >
         {loading ? "Creating..." : "Create Trip"}
       </button>

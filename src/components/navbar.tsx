@@ -7,41 +7,15 @@ export default function Navbar(){
 
  return(
 
-<nav
-className="
-border-b
-sticky
-top-0
-bg-transparent backdrop-blur-2xl
-z-50">
+<nav className="sticky top-0 backdrop-blur-2xl bg-transparent z-50 border-b border-glass-border">
 
-<div
-className="
-max-w-7xl
-mx-auto
+<div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-px-6
-py-4
+<div className="flex gap-8 items-center">
 
-flex
+<Link href="/dashboard">
 
-justify-between
-
-items-center">
-
-<div
-className="
-flex
-gap-8
-items-center">
-
-<Link
-href="/dashboard">
-
-<h1
-className="
-font-bold
-text-xl">
+<h1 className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
 
 🌍 TripPlanner
 
@@ -49,8 +23,7 @@ text-xl">
 
 </Link>
 
-<Link
-href="/dashboard">
+<Link href="/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition">
 
 Dashboard
 
@@ -58,11 +31,7 @@ Dashboard
 
 </div>
 
-<div
-className="
-flex
-items-center
-gap-4">
+<div className="flex items-center gap-6">
 
 <UserButton/>
 

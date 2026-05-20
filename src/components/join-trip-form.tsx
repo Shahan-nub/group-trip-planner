@@ -30,19 +30,19 @@ export default function JoinTripForm() {
   return (
     <form
       action={handleSubmit}
-      className="flex gap-2"
+      className="flex flex-col sm:flex-row gap-3"
     >
       <input
         required
         name="inviteCode"
         placeholder="Enter invite code"
-        className="border p-2 rounded"
+        className="glass-sm rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition flex-1"
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-500 text-white px-4 rounded"
+        className="glass-sm rounded-xl px-6 py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 transition duration-200 transform hover:scale-105 whitespace-nowrap"
       >
         {loading ? "Joining..." : "Join"}
       </button>

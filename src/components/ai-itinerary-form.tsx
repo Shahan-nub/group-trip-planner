@@ -62,144 +62,110 @@ export default function AIItineraryForm({
   }
 
   return (
-    <div
-      className="
-border
-rounded-xl
-p-5
-mt-10"
-    >
-      <h2
-        className="
-text-xl
-font-bold
-mb-4"
-      >
-        AI Planner
-      </h2>
-
-      <input
-        type="number"
-        value={days}
-        onChange={(e) => setDays(Number(e.target.value))}
-        className="
-border
-p-2
-mb-2"
-      />
-
-      <input
-        type="number"
-        value={budget}
-        onChange={(e) => setBudget(Number(e.target.value))}
-        className="
-border
-p-2
-mb-2"
-      />
-
-      <select
-        value={tripType}
-        onChange={(e) => setTripType(e.target.value)}
-        className="
-border
-p-2"
-      >
-        <option>Adventure</option>
-
-        <option>Relaxed</option>
-
-        <option>Nightlife</option>
-
-        <option>Budget</option>
-      </select>
-
-      <button
-        onClick={handleGenerate}
-        className="
-bg-blue-600
-text-white
-px-4
-py-2
-rounded
-ml-2"
-      >
-        {loading ? "Generating..." : "Generate"}
-      </button>
-
-      <div
-        className="
-mt-5
-space-y-3"
-      >
-        {result.map((item, i) => (
-          <div
-            key={i}
-            className="
-border
-rounded
-p-3"
-          >
-            <h3>
-              Day
-              {item.day}-{item.title}
-            </h3>
-
-            <p>
-              📍
-              {item.location}
-            </p>
-
-            <p>{item.description}</p>
+    <div className="space-y-6">
+      <div className="glass rounded-3xl p-8">
+        <h2 className="text-2xl font-bold mb-6">AI Itinerary Generator</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">📅 Days</label>
+            <input
+              type="number"
+              min="1"
+              max="10"
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              className="glass-sm rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
           </div>
-        ))}
+
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">💰 Budget</label>
+            <input
+              type="number"
+              value={budget}
+              onChange={(e) => setBudget(Number(e.target.value))}
+              className="glass-sm rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">✨ Trip Type</label>
+            <select
+              value={tripType}
+              onChange={(e) => setTripType(e.target.value)}
+              className="glass-sm rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            >
+              <option>Adventure</option>
+              <option>Relaxed</option>
+              <option>Nightlife</option>
+              <option>Budget</option>
+            </select>
+          </div>
+
+          <div className="flex items-end">
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              className="glass-sm rounded-xl px-6 py-3 w-full font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 transition duration-200 transform hover:scale-105"
+            >
+              {loading ? "Generating..." : "Generate"}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <button
-        disabled={saving || result.length === 0}
-        onClick={async () => {
-          try {
-            setSaving(true);
+      {result.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-2xl font-bold">Generated Itinerary</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {result.map((item, i) => (
+              <div key={i} className="glass rounded-2xl p-6 hover:shadow-lg transition">
+                <h4 className="font-bold text-lg text-blue-600 dark:text-blue-400 mb-3">
+                  Day {item.day} - {item.title}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 mb-2">📍 {item.location}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{item.description}</p>
+              </div>
+            ))}
+          </div>
 
-            await saveAIItinerary(
-              tripId,
+          <button
+            disabled={saving}
+            onClick={async () => {
+              try {
+                setSaving(true);
+                await saveAIItinerary(tripId, result);
+                setSaved(true);
+                setResult([]);
+                setDays(3);
+                setBudget(10000);
+                setTripType("Adventure");
+                setTimeout(() => {
+                  setSaved(false);
+                }, 3000);
+              } catch (err) {
+                console.log(err);
+              } finally {
+                setSaving(false);
+              }
+            }}
+            className="glass-sm rounded-xl px-8 py-3 w-full font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 transition duration-200 transform hover:scale-105"
+          >
+            {saving ? "Saving..." : "Save to Trip"}
+          </button>
 
-              result,
-            );
-
-            setSaved(true);
-
-            // reset form
-            setResult([]);
-
-            setDays(3);
-
-            setBudget(10000);
-
-            setTripType("Adventure");
-
-            // remove msg later
-            setTimeout(() => {
-              setSaved(false);
-            }, 3000);
-          } catch (err) {
-            console.log(err);
-          } finally {
-            setSaving(false);
-          }
-        }}
-        className="bg-green-600 text-white px-4 py-2 rounded mt-4"
-      >
-        {saving ? "Saving..." : "Save To Trip"}
-      </button>
-
-      {saved && (
-        <p
-          className=" text-green-600 mt-2 font-semibold"
-        >
-          ✅ Saved to trip itinerary
-        </p>
+          {saved && (
+            <div className="glass rounded-2xl p-4 text-center">
+              <p className="text-green-600 dark:text-green-400 font-semibold">✅ Saved to trip itinerary!</p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
+    //     </p>
+    //   )}
+    // </div>
+  // );
 }

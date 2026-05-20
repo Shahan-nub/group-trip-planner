@@ -12,10 +12,8 @@ className="
 border-b
 sticky
 top-0
-glass
-z-50
-border-0
-shadow-lg">
+bg-transparent backdrop-blur-2xl
+z-50">
 
 <div
 className="
@@ -43,13 +41,7 @@ href="/dashboard">
 <h1
 className="
 font-bold
-text-2xl
-bg-gradient-to-r
-from-blue-500
-to-cyan-500
-bg-clip-text
-text-transparent
-hover:opacity-80">
+text-xl">
 
 🌍 TripPlanner
 
@@ -58,13 +50,7 @@ hover:opacity-80">
 </Link>
 
 <Link
-href="/dashboard"
-className="
-text-foreground
-opacity-70
-hover:opacity-100
-font-medium
-text-sm">
+href="/dashboard">
 
 Dashboard
 

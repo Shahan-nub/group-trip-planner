@@ -1,0 +1,323 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       String  @id @default(cuid())
+  clerkId  String  @unique
+  name     String
+  username String? @unique
+  email    String  @unique
+  imageUrl String?
+  bio      String?
+  college  String?
+
+  createdTrips    Trip[]         @relation("TripCreator")
+  trips           TripMember[]
+  expensesPaid    Expense[]      @relation("ExpensePayer")
+  splits          ExpenseSplit[]
+  settlementsSent Settlement[]   @relation("SettlementSender")
+  settlementsRecv Settlement[]   @relation("SettlementReceiver")
+
+  notifications Notification[]
+  chats         Chat[]
+  pollVotes     PollVote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//-----
+
+model Trip {
+  id String @id @default(cuid())
+
+  title       String
+  description String?
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  coverImage  String?
+
+  inviteCode String @unique
+
+  creatorId String
+  creator   User   @relation("TripCreator", fields: [creatorId], references: [id])
+
+  members       TripMember[]
+  expenses      Expense[]
+  settlements   Settlement[]
+  activities    Activity[]
+  chats         Chat[]
+  polls         Poll[]
+  checklists    Checklist[]
+  budget        Budget?
+  notifications Notification[]
+
+  totalExpense Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//--
+
+model TripMember {
+  id String @id @default(cuid())
+
+  userId String
+  tripId String
+
+  role TripRole @default(MEMBER)
+
+  joinedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  @@unique([userId, tripId])
+}
+
+enum TripRole {
+  ADMIN
+  MEMBER
+}
+
+//-----
+
+model Expense {
+  id String @id @default(cuid())
+
+  title    String
+  amount   Float
+  category ExpenseCategory
+
+  paidById String
+  paidBy   User   @relation("ExpensePayer", fields: [paidById], references: [id])
+
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [id])
+
+  notes      String?
+  receiptUrl String?
+
+  splits ExpenseSplit[]
+
+  createdAt DateTime @default(now())
+}
+
+enum ExpenseCategory {
+  FOOD
+  HOTEL
+  TRANSPORT
+  SHOPPING
+  FUEL
+  ACTIVITIES
+  OTHER
+}
+
+// ----
+
+model ExpenseSplit {
+  id String @id @default(cuid())
+
+  expenseId String
+  userId    String
+
+  amount Float
+  isPaid Boolean @default(false)
+
+  expense Expense @relation(fields: [expenseId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([expenseId, userId])
+}
+
+// ----
+
+model Settlement {
+  id String @id @default(cuid())
+
+  tripId String
+
+  senderId   String
+  receiverId String
+
+  amount Float
+
+  note String?
+
+  isSettled Boolean @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  sender User @relation("SettlementSender", fields: [senderId], references: [id])
+
+  receiver User @relation("SettlementReceiver", fields: [receiverId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([tripId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+// ----
+
+model Activity {
+  id String @id @default(cuid())
+
+  tripId String
+
+  title       String
+  description String?
+
+  location String?
+
+  startTime DateTime
+  endTime   DateTime
+
+  createdById String
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// ---
+
+model Chat {
+  id String @id @default(cuid())
+
+  tripId   String
+  senderId String
+
+  message String
+
+  isEdited Boolean @default(false)
+
+  sender User @relation(fields: [senderId], references: [id])
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// ----
+
+model Poll {
+  id String @id @default(cuid())
+
+  question String
+
+  tripId String
+
+  options PollOption[]
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model PollOption {
+  id String @id @default(cuid())
+
+  text String
+
+  pollId String
+
+  poll Poll @relation(fields: [pollId], references: [id])
+
+  votes PollVote[]
+}
+
+model PollVote {
+  id String @id @default(cuid())
+
+  optionId String
+  userId   String
+
+  option PollOption @relation(fields: [optionId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([optionId, userId])
+}
+
+// ----
+
+model Checklist {
+  id String @id @default(cuid())
+
+  title String
+
+  tripId String
+
+  items ChecklistItem[]
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// ---- 
+
+model ChecklistItem {
+  id String @id @default(cuid())
+
+  text String
+
+  completed Boolean @default(false)
+
+  checklistId String
+
+  checklist Checklist @relation(fields: [checklistId], references: [id])
+}
+
+// ---
+
+model Budget {
+  id String @id @default(cuid())
+
+  tripId String @unique
+
+  limit Float
+
+  spent Float @default(0)
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// -----
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+  tripId String?
+
+  title   String
+  message String
+
+  isRead Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+
+  trip Trip? @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}

@@ -13,11 +13,11 @@ export default function Navbar(){
 
 <div className="flex gap-8 items-center">
 
-<Link href="/dashboard">
+<Link href="/">
 
-<h1 className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+<h1 className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-blue-200 bg-clip-text text-transparent">
 
-🌍 TripPlanner
+ TripPlanner
 
 </h1>
 

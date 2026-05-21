@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { joinTrip } from "@/src/actions/join-trip";
+import { toast } from "react-hot-toast";
 
 export default function JoinTripForm() {
   const [loading, setLoading] =
@@ -19,7 +20,7 @@ export default function JoinTripForm() {
 
       await joinTrip(inviteCode);
 
-      alert("Joined trip!");
+      toast.success("Joined trip!");
     } catch (error: any) {
       alert(error.message);
     }

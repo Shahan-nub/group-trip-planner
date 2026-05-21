@@ -13,6 +13,9 @@ import AIItineraryForm from "@/src/components/ai-itinerary-form";
 import Link from "next/dist/client/link";
 import { expenseByCategory } from "@/src/services/analytics.service";
 import ExpenseChart from "@/src/components/expense-chart";
+import { getPlaceImage } from "@/src/services/place.service";
+import { getDestinationImages } from "@/src/services/destination.service";
+import TripHero from "@/src/components/trip-hero";
 
 type Props = {
   params: Promise<{
@@ -49,36 +52,28 @@ export default async function TripPage({ params }: Props) {
 
   const analytics = await expenseByCategory(trip.id);
 
-  // console.log(budget);
+  const activitiesWithImages = await Promise.all(
+    trip.activities.map(async (activity) => ({
+      ...activity,
 
-  // const remaining = budget ? budget.limit - budget.spent : 0;
+      image: await getPlaceImage(activity.location || activity.title),
+    })),
+  );
+
+  const heroImages = await getDestinationImages(trip.destination);
 
   return (
     <div className="min-h-screen p-8 md:p-12">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div>
-            <Link
-              href="/dashboard"
-              className="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block text-sm font-medium"
-            >
-              ← Back to Dashboard
-            </Link>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {trip.title}
-            </h1>
+          
+          <TripHero
+            images={heroImages}
+            title={trip.title}
+            destination={trip.destination}
+          />
 
-            <p className="text-gray-600 dark:text-gray-400 mt-3 text-lg">
-              📍 {trip.destination}
-            </p>
-          </div>
-
-          <div className="glass rounded-2xl p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Invite Code
-            </p>
-            <p className="text-lg font-semibold font-mono">{trip.inviteCode}</p>
-          </div>
+          
         </div>
 
         {/* Stats */}
@@ -108,6 +103,13 @@ export default async function TripPage({ params }: Props) {
             <h2 className="text-5xl font-bold text-purple-600 dark:text-purple-400">
               {trip.activities.length}
             </h2>
+          </div>
+
+          <div className="glass rounded-2xl p-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Invite Code
+            </p>
+            <p className="text-lg font-semibold font-mono">{trip.inviteCode}</p>
           </div>
         </div>
 
@@ -231,7 +233,6 @@ export default async function TripPage({ params }: Props) {
 
           <ExpenseChart data={analytics} />
         </div>
-
 
         {/* Balance  */}
         <div className="mb-10">
@@ -360,18 +361,33 @@ export default async function TripPage({ params }: Props) {
                 No activities planned yet
               </p>
             ) : (
-              trip.activities.map((activity) => (
+              activitiesWithImages.map((activity) => (
                 <div
                   key={activity.id}
-                  className="glass rounded-2xl p-6 hover:shadow-lg transition"
+                  className="border rounded-xl overflow-hidden"
                 >
-                  <h3 className="font-bold text-xl mb-3">{activity.title}</h3>
-                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                    <p>📍 {activity.location}</p>
+                  {activity.image && (
+                    <img
+                      src={activity.image}
+                      alt={activity.title}
+                      className="w-full h-56 object-cover"
+                    />
+                  )}
+
+                  <div className="p-5">
+                    <h3 className="font-bold text-lg">{activity.title}</h3>
+
                     <p>
-                      🕐 Start: {new Date(activity.startTime).toLocaleString()}
+                      📍
+                      {activity.location}
                     </p>
-                    <p>🕐 End: {new Date(activity.endTime).toLocaleString()}</p>
+
+                    <p>{activity.description}</p>
+
+                    <p>
+                      Start:
+                      {new Date(activity.startTime).toLocaleString()}
+                    </p>
                   </div>
                 </div>
               ))

@@ -4,10 +4,9 @@ import { prisma } from "@/src/lib/prisma";
 import { currentUserDb } from "@/src/lib/current-user";
 
 import { revalidatePath } from "next/cache";
+import { redis } from "../lib/redis";
 
-export async function joinTrip(
-  inviteCode: string
-) {
+export async function joinTrip(inviteCode: string) {
   const user = await currentUserDb();
 
   if (!user) {
@@ -32,20 +31,17 @@ export async function joinTrip(
   }
 
   // Already joined?
-  const existingMember =
-    await prisma.tripMember.findUnique({
-      where: {
-        userId_tripId: {
-          userId: user.id,
-          tripId: trip.id,
-        },
+  const existingMember = await prisma.tripMember.findUnique({
+    where: {
+      userId_tripId: {
+        userId: user.id,
+        tripId: trip.id,
       },
-    });
+    },
+  });
 
   if (existingMember) {
-    throw new Error(
-      "Already a member of this trip"
-    );
+    throw new Error("Already a member of this trip");
   }
 
   // Join trip
@@ -56,6 +52,8 @@ export async function joinTrip(
       role: "MEMBER",
     },
   });
+
+  await redis.del(`trip:${trip.id}`);
 
   revalidatePath("/dashboard");
 
